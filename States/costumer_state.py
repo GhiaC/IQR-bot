@@ -1,24 +1,36 @@
-from telegram import ReplyKeyboardMarkup, LabeledPrice
 import requests
-import urllib3
+from telegram import ReplyKeyboardMarkup, LabeledPrice
 
-from Bot.bot_config import BotConfig
+from Config.bot_config import BotConfig
 from Constants.bot_messages import BotMessage
 from Constants.button_messages import ButtonMessage
 from Constants.common import BotState, UserData, Mode, ApiData, Pattern, Product, LogMessage
 from Parser.JsonToResponse import *
 from Requests.RequestModel import *
-from Utils.general_handlers import getting_user_info, getting_message_to_dict, getting_message_info
+from Utils.general_handlers import getting_user_info, getting_message_to_dict
 from Utils.logger import iqr_bot_logger
-import json
 
 
-def start(bot, update):
+def start(bot, update, user_data):
     general_message = BotMessage.start
     reply_keyboard = [[ButtonMessage.start]]
-
-    update.message.reply_text(general_message, reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True))
-    return BotState.start
+    if update['_effective_user']['username']:
+        request = requests.post(BotConfig.server_address + ApiData.is_shop + update['_effective_user']['username'])
+        result = request.json()["AckResponse"]["result"]
+        user_data["is_admin"] = result
+        if result:
+            update.message.reply_text("Login successful! \n Hello Sellman!",
+                                      reply_markup=ReplyKeyboardMarkup([[ButtonMessage.add_file]],
+                                                                       one_time_keyboard=True))
+            return BotState.admin_menu
+        else:
+            update.message.reply_text("Hello Costumer!",
+                                      reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True))
+            return BotState.customer_menu
+    else:
+        update.message.reply_text(general_message,
+                                  reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True))
+        return BotState.customer_menu
 
 
 def help(bot, update):

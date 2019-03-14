@@ -18,11 +18,13 @@ class BotState:
     help = "HELP"
     menu = "MENU"
     customer_menu = "CUSTOMER_MENU"
+    admin_menu = "ADMIN_MENU"
     give_location = "GIVE_LOCATION"
     get_nearest_stores = "GET_NEAREST_STORE"
     show_shop = "GET_SHOP"
     show_product = "GET_PRODUCT"
     success_payment = "SUCCESS_PAYMENT"
+    admin_file_upload = "admin_file_upload"
 
 
 class Pattern:
@@ -38,6 +40,7 @@ class Mode:
 class ApiData:
     api_shops = "api/shops"
     api_shop = "api/shop/"
+    is_shop = "api/isshop/"
     api_product = "api/product/"
     success_payment = "api/successpayment"
     text = "text"

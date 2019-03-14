@@ -1,5 +1,5 @@
 from telegram.ext import Updater
-from Bot.bot_config import BotConfig
+from Config.bot_config import BotConfig
 from Utils.bot_handlers import bot_handlers
 
 if __name__ == '__main__':
