@@ -17,6 +17,7 @@ class BotState:
     customer_menu = "CUSTOMER_MENU"
     give_location = "GIVE_LOCATION"
     get_nearest_stores = "GET_NEAREST_STORE"
+    show_shop = "GET_SHOP"
 
 
 class Pattern:

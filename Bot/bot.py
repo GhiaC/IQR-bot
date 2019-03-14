@@ -27,7 +27,7 @@ def help(bot, update):
     return BotState.help
 
 
-def customer_menu(bot, update):
+def customer_menu(bot, update, user_data):
     chat_id = getting_user_info(update)
     reply_keyboard = [[ButtonMessage.show_stores, ButtonMessage.show_discounts]]
     bot.send_message(chat_id, BotMessage.customer_menu, reply_markup=ReplyKeyboardMarkup(keyboard=reply_keyboard))
@@ -62,7 +62,21 @@ def get_near_stores(bot, update, user_data):
 
     chat_id = getting_user_info(update)
     bot.send_message(chat_id, bot_response)
-    return BotState.customer_menu
+    return BotState.get_nearest_stores
+
+
+def show_shop(bot, update, user_data):
+    result = update.message.to_dict()
+
+    print(result)
+
+    request = requests.post(BotConfig.server_address + 'api/shop/' + result.get("text"))
+
+    bot_response = Conversation.show_shop_response(request.json())
+
+    chat_id = getting_user_info(update)
+    bot.send_message(chat_id, bot_response)
+    return BotState.show_shop
 
 
 def error(bot, update):
