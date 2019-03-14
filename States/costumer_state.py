@@ -12,14 +12,12 @@ from Utils.logger import iqr_bot_logger
 
 
 def start(bot, update, user_data):
-    general_message = BotMessage.start
-    reply_keyboard = [[ButtonMessage.start]]
     if update['_effective_user']['username']:
         request = requests.post(BotConfig.server_address + ApiData.is_shop + update['_effective_user']['username'])
         result = request.json()["AckResponse"]["result"]
         user_data["is_admin"] = result
         if result:
-            bot.send_message(getting_user_info(update), "Login successful! \n Hello Sellman!",
+            bot.send_message(getting_user_info(update), BotMessage.seller_menu,
                              reply_markup=ReplyKeyboardMarkup([[ButtonMessage.add_file,
                                                                 ButtonMessage.add_file
                                                                 ]],

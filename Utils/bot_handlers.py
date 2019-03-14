@@ -1,5 +1,5 @@
 from States.costumer_state import *
-from States.admin_state import *
+from States.admin_state import add_file, change_state_to_upload
 from Constants.bot_command import Command
 from Constants.common import Pattern, BotState
 from Constants.button_messages import ButtonMessage
