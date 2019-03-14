@@ -31,3 +31,12 @@ def as_get_shops_response(d):
     p = GetShopsResponse()
     p.__dict__.update(d)
     return p
+
+
+class Product(object):
+    title = ''
+    text = ''
+    picture = ''
+    price = ''
+    discount = ''
+

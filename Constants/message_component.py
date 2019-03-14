@@ -7,3 +7,8 @@ class MessageComponent:
     startTime = 'ساعت شروع به کار : '
     endTime = 'ساعت پایان کار : '
     stars = 'امتیاز : '
+    title = 'عنوان ؛ '
+    text = 'توضیحات : '
+    price = 'قیمت : '
+    discount = 'تخفیف : '
+    see_product = '[دیدن محصول]'

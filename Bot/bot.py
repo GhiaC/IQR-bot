@@ -1,16 +1,14 @@
-from telegram import ReplyKeyboardMarkup
-
-from Constants.button_messages import ButtonMessage
-from Constants.bot_messages import BotMessage
-from Constants.common import BotState
-from Utils.logger import iqr_bot_logger
-from Utils.general_handlers import getting_user_info
 import requests
+from telegram import ReplyKeyboardMarkup, LabeledPrice
+
 from Bot.bot_config import BotConfig
-from Requests.RequestModel import *
-from Responses.ResponseModel import *
-import json
+from Constants.bot_messages import BotMessage
+from Constants.button_messages import ButtonMessage
+from Constants.common import BotState
 from Parser.JsonToResponse import *
+from Requests.RequestModel import *
+from Utils.general_handlers import getting_user_info
+from Utils.logger import iqr_bot_logger
 
 
 def start(bot, update):
@@ -68,9 +66,20 @@ def get_near_stores(bot, update, user_data):
 def show_shop(bot, update, user_data):
     result = update.message.to_dict()
 
-    print(result)
+    chat_id = getting_user_info(update)
 
     request = requests.post(BotConfig.server_address + 'api/shop/' + result.get("text"))
+    json_message = request.json()
+    bot_response = Conversation.show_shop_response(json_message)
+    bot.send_message(chat_id, bot_response)
+
+    bot.send_location(chat_id, json_message['GetShopResponse']['shop']['lat'],
+                      json_message['GetShopResponse']['shop']['long'])
+
+    bot_response = Conversation.show_product_response(json_message)
+    bot.send_message(chat_id, bot_response)
+
+    return BotState.show_shop
 
     bot_response = Conversation.show_shop_response(request.json())
 
