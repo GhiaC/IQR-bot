@@ -15,6 +15,8 @@ class BotState:
     help = "HELP"
     menu = "MENU"
     customer_menu = "CUSTOMER_MENU"
+    give_location = "GIVE_LOCATION"
+    send_request = "send"
 
 
 class Pattern:

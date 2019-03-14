@@ -28,10 +28,30 @@ def customer_menu(bot, update):
     return BotState.customer_menu
 
 
-def send_location(bot, update):
-    pass
+def send_location_for_stores(bot, update, user_data):
+    user_data['mode'] = 1
+    chat_id = getting_user_info(update)
+    bot.send_message(chat_id, BotMessage.give_location)
+    return BotState.give_location
+
+
+def send_location_for_discount(bot, update, user_data):
+    user_data['mode'] = 2
+    chat_id = getting_user_info(update)
+    bot.send_message(chat_id, BotMessage.give_location)
+    return BotState.give_location
+
+
+def get_near_stores(bot, update, user_data):
+    if user_data['mode'] == 1:
+        general_message = 'mode 1'
+    else :
+        general_message = 'mode 2'
+
+    chat_id = getting_user_info(update)
+    bot.send_message(chat_id, general_message)
+    return BotState.customer_menu
 
 
 def error(bot, update):
     iqr_bot_logger.warning('Update "%s" caused error "%s"', update, update.message)
-
