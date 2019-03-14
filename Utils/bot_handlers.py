@@ -10,7 +10,7 @@ def bot_handlers(dp):
     conversation_handler = ConversationHandler(entry_points=[CommandHandler(Command.start, start)], states={
 
         BotState.start: [RegexHandler(pattern=Pattern.absolute.format(ButtonMessage.start),
-                                      callback=get_near_stores, pass_user_data=True)],
+                                      callback=customer_menu, pass_user_data=True)],
 
         BotState.customer_menu: [CommandHandler(Command.start, start),
                                  RegexHandler(pattern=Pattern.absolute.format(ButtonMessage.show_stores),
@@ -40,6 +40,6 @@ def bot_handlers(dp):
         ]
     },
 
-                                               fallbacks=[CommandHandler(Command.cancel, customer_menu)]
-                                               )
+       fallbacks=[CommandHandler(Command.cancel, customer_menu)]
+       )
     dp.add_handler(conversation_handler)
