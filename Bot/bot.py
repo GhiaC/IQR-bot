@@ -81,10 +81,28 @@ def show_shop(bot, update, user_data):
 
     return BotState.show_shop
 
-    bot_response = Conversation.show_shop_response(request.json())
+
+def show_product(bot, update, user_data):
+    result = update.message.to_dict()
 
     chat_id = getting_user_info(update)
-    bot.send_message(chat_id, bot_response)
+
+    request = requests.post(BotConfig.server_address + 'api/product/' + result.get("text"))
+
+    p = request.json()['GetProductResponse']['product'][0]
+
+    title = p['title']
+    text = p['text']
+    picture = p['picture']
+    price = p['price']
+    discount = p['discount']
+
+    bot.send_invoice(chat_id, title, text, "", "60606060", "", "USD",
+                     prices=[
+                         LabeledPrice(title, int(int(price) * 1.0 - (int(discount) / 100.0) * int(price)))
+                     ]
+                     )  # , photo_url=BotConfig.server_address + 'images/' + bot_response.picture)
+
     return BotState.show_shop
 
 
