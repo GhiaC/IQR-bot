@@ -35,6 +35,10 @@ def bot_handlers(dp):
         ],
         BotState.show_product: [
             CommandHandler(Command.start, start),
+            MessageHandler(filters=Filters.text, callback=success_payment, pass_user_data=True)
+        ],
+        BotState.success_payment: [
+            CommandHandler(Command.start, start),
             RegexHandler(pattern=Pattern.absolute.format(ButtonMessage.show_stores),
                          callback=show_product, pass_user_data=True)
         ]

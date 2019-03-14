@@ -2,6 +2,7 @@ class UserData:
     stores_list = "stores_list"
     show_stores = "show_stores"
     show_discounts = "show_discounts"
+    payment_product_id = "payment_product_id"
 
 
 class UserState:
@@ -21,6 +22,7 @@ class BotState:
     get_nearest_stores = "GET_NEAREST_STORE"
     show_shop = "GET_SHOP"
     show_product = "GET_PRODUCT"
+    success_payment = "SUCCESS_PAYMENT"
 
 
 class Pattern:
@@ -37,6 +39,7 @@ class ApiData:
     api_shops = "api/shops"
     api_shop = "api/shop/"
     api_product = "api/product/"
+    success_payment = "api/successpayment"
     text = "text"
     get_shop_response = "GetShopResponse"
     get_product_response = "GetProductResponse"
@@ -45,6 +48,7 @@ class ApiData:
 
 
 class Product:
+    id = 'id'
     title = 'title'
     text = 'text'
     payload = ""

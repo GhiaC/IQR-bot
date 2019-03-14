@@ -1,5 +1,6 @@
 from telegram import ReplyKeyboardMarkup, LabeledPrice
 import requests
+import urllib3
 
 from Bot.bot_config import BotConfig
 from Constants.bot_messages import BotMessage
@@ -9,11 +10,13 @@ from Parser.JsonToResponse import *
 from Requests.RequestModel import *
 from Utils.general_handlers import getting_user_info, getting_message_to_dict, getting_message_info
 from Utils.logger import iqr_bot_logger
+import json
 
 
 def start(bot, update):
     general_message = BotMessage.start
     reply_keyboard = [[ButtonMessage.start]]
+
     update.message.reply_text(general_message, reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True))
     return BotState.start
 
@@ -29,7 +32,7 @@ def customer_menu(bot, update, user_data):
     reply_keyboard = [[ButtonMessage.show_stores, ButtonMessage.show_discounts]]
     bot.send_message(getting_user_info(update), BotMessage.customer_menu,
                      reply_markup=ReplyKeyboardMarkup(keyboard=reply_keyboard))
-    return BotState.customer_menu
+    return BotState.show_product
 
 
 def send_location_for_stores(bot, update, user_data):
@@ -81,6 +84,8 @@ def show_product(bot, update, user_data):
     product = request.json()[ApiData.get_product_response][ApiData.product][Pattern.zero]
     # picture = product[Product.picture]
 
+    user_data[UserData.payment_product_id] = product[Product.id]
+
     bot.send_invoice(getting_user_info(update), product[Product.title], product[Product.text], Product.payload,
                      Product.card_number, Product.start_parameter, Product.currency,
                      prices=[
@@ -89,7 +94,24 @@ def show_product(bot, update, user_data):
                                           * int(product[Product.price])))
                      ])  # , photo_url=BotConfig.server_address + 'images/' + bot_response.picture)
 
-    return BotState.show_shop
+    return BotState.show_product
+
+
+def success_payment(bot, update, user_data):
+    result = update.message.to_dict()
+    user_data[UserData.payment_product_id] = 11
+
+    chat_id = getting_user_info(update)
+    request_model = {'chat_id': str(chat_id), 'product_id': str(user_data[UserData.payment_product_id])}
+
+    request = requests.post(BotConfig.server_address + ApiData.success_payment, json=request_model)
+    response = request.json()["SuccessPaymentResponse"]['link']
+
+    files = {'photo': str(response)}
+    values = {'chat_id': chat_id}
+
+    requests.post(BotConfig.base_url + BotConfig.bot_token + "/sendphoto", files=files, data=values)
+    return BotState.customer_menu
 
 
 def error(bot, update):
