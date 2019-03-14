@@ -7,7 +7,7 @@ from Constants.button_messages import ButtonMessage
 from Constants.common import BotState, UserData, Mode, ApiData, Pattern, Product, LogMessage
 from Parser.JsonToResponse import *
 from Requests.RequestModel import *
-from Utils.general_handlers import getting_user_info
+from Utils.general_handlers import getting_user_info, getting_message_to_dict, getting_message_info
 from Utils.logger import iqr_bot_logger
 
 
@@ -26,9 +26,8 @@ def help(bot, update):
 
 
 def customer_menu(bot, update, user_data):
-    chat_id = getting_user_info(update)
     reply_keyboard = [[ButtonMessage.show_stores, ButtonMessage.show_discounts]]
-    bot.send_message(chat_id, BotMessage.customer_menu, reply_markup=ReplyKeyboardMarkup(keyboard=reply_keyboard))
+    bot.send_message(getting_user_info(update), BotMessage.customer_menu, reply_markup=ReplyKeyboardMarkup(keyboard=reply_keyboard))
     return BotState.customer_menu
 
 
@@ -58,7 +57,7 @@ def get_near_stores(bot, update, user_data):
 
 
 def show_shop(bot, update, user_data):
-    result = update.message.to_dict()
+    result = getting_message_to_dict
 
     request = requests.post(BotConfig.server_address + ApiData.api_shop + result.get(ApiData.text))
     json_message = request.json()
