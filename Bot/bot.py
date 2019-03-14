@@ -5,6 +5,12 @@ from Constants.bot_messages import BotMessage
 from Constants.common import BotState
 from Utils.logger import iqr_bot_logger
 from Utils.general_handlers import getting_user_info
+import requests
+from Bot.bot_config import BotConfig
+from Requests.RequestModel import *
+from Responses.ResponseModel import *
+import json
+from Parser.JsonToResponse import *
 
 
 def start(bot, update):
@@ -43,13 +49,19 @@ def send_location_for_discount(bot, update, user_data):
 
 
 def get_near_stores(bot, update, user_data):
-    if user_data['mode'] == 1:
-        general_message = 'mode 1'
-    else :
-        general_message = 'mode 2'
+    # TODO handle get location info
+    user_data['mode'] = 1
+    lat = 50
+    long = 50
+
+    request_model = RequestModel.get_nearest_stores(user_data['mode'], lat, long)
+
+    request = requests.post(BotConfig.server_address + 'api/shops', json=request_model)
+
+    bot_response = Conversation.shop_response(request.json())
 
     chat_id = getting_user_info(update)
-    bot.send_message(chat_id, general_message)
+    bot.send_message(chat_id, bot_response)
     return BotState.customer_menu
 
 

@@ -10,7 +10,7 @@ def bot_handlers(dp):
     conversation_handler = ConversationHandler(entry_points=[CommandHandler(Command.start, start)], states={
 
         BotState.start: [RegexHandler(pattern=Pattern.absolute.format(ButtonMessage.start),
-                                      callback=customer_menu)],
+                                      callback=get_near_stores, pass_user_data=True)],
 
         BotState.customer_menu: [RegexHandler(pattern=Pattern.absolute.format(ButtonMessage.show_stores),
                                               callback=send_location_for_stores, pass_user_data=True),
@@ -21,8 +21,10 @@ def bot_handlers(dp):
             MessageHandler(filters=Filters.location, callback=get_near_stores, pass_user_data=True)
         ],
 
-        BotState.send_request: [RegexHandler(pattern=Pattern.absolute.format(ButtonMessage.show_stores),
-                                             callback=get_near_stores, pass_user_data=True)]
+        BotState.get_nearest_stores: [  # on command
+            RegexHandler(pattern=Pattern.absolute.format(ButtonMessage.show_stores),
+                         callback=get_near_stores, pass_user_data=True)
+        ]
     },
 
                                                fallbacks=[CommandHandler(Command.cancel, customer_menu)]
