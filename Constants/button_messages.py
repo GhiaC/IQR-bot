@@ -5,3 +5,4 @@ class ButtonMessage:
     show_stores = "نمایش فروشگاه های نزدیک من"
     show_discounts = "نمایش فروشگاه های تخفیف دار نزدیک من"
     send_location = "ارسال موقعیت مکانی"
+    add_file = "افزودن فایل به پنل مدیریت"
