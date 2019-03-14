@@ -35,7 +35,7 @@ class Mode:
 
 class ApiData:
     api_shops = "api/shops"
-    api_shop = "api/shop"
+    api_shop = "api/shop/"
     api_product = "api/product/"
     text = "text"
     get_shop_response = "GetShopResponse"

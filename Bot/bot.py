@@ -27,7 +27,8 @@ def help(bot, update):
 
 def customer_menu(bot, update, user_data):
     reply_keyboard = [[ButtonMessage.show_stores, ButtonMessage.show_discounts]]
-    bot.send_message(getting_user_info(update), BotMessage.customer_menu, reply_markup=ReplyKeyboardMarkup(keyboard=reply_keyboard))
+    bot.send_message(getting_user_info(update), BotMessage.customer_menu,
+                     reply_markup=ReplyKeyboardMarkup(keyboard=reply_keyboard))
     return BotState.customer_menu
 
 
@@ -44,11 +45,10 @@ def send_location_for_discount(bot, update, user_data):
 
 
 def get_near_stores(bot, update, user_data):
-    # TODO handle get location info
     user_data[UserData.show_stores] = Mode.stores_mode
-    lat = 50
-    long = 50
-
+    location = update.message.to_dict()
+    lat = location['location']['latitude']
+    long = location['location']['longitude']
     request_model = RequestModel.get_nearest_stores(user_data[UserData.show_stores], lat, long)
     request = requests.post(BotConfig.server_address + ApiData.api_shops, json=request_model)
     bot_response = Conversation.shop_response(request.json())
@@ -57,7 +57,7 @@ def get_near_stores(bot, update, user_data):
 
 
 def show_shop(bot, update, user_data):
-    result = getting_message_to_dict
+    result = getting_message_to_dict(update)
 
     request = requests.post(BotConfig.server_address + ApiData.api_shop + result.get(ApiData.text))
     json_message = request.json()
