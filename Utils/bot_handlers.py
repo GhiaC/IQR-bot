@@ -14,7 +14,7 @@ def bot_handlers(dp):
             BotState.start: [RegexHandler(pattern=Pattern.absolute.format(ButtonMessage.start),
                                           callback=customer_menu, pass_user_data=True)],
 
-            BotState.customer_menu: [CommandHandler(Command.start, start),
+            BotState.customer_menu: [CommandHandler(Command.start, start, pass_user_data=True),
                                      RegexHandler(pattern=Pattern.absolute.format(ButtonMessage.show_stores),
                                                   callback=send_location_for_stores, pass_user_data=True),
                                      RegexHandler(pattern=Pattern.absolute.format(ButtonMessage.show_discounts),

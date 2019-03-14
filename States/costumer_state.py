@@ -19,17 +19,21 @@ def start(bot, update, user_data):
         result = request.json()["AckResponse"]["result"]
         user_data["is_admin"] = result
         if result:
-            update.message.reply_text("Login successful! \n Hello Sellman!",
-                                      reply_markup=ReplyKeyboardMarkup([[ButtonMessage.add_file]],
-                                                                       one_time_keyboard=True))
+            bot.send_message(getting_user_info(update), "Login successful! \n Hello Sellman!",
+                             reply_markup=ReplyKeyboardMarkup([[ButtonMessage.add_file,
+                                                                ButtonMessage.add_file
+                                                                ]],
+                                                              one_time_keyboard=True))
             return BotState.admin_menu
         else:
-            update.message.reply_text("Hello Costumer!",
-                                      reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True))
+            reply_keyboard = [[ButtonMessage.show_stores, ButtonMessage.show_discounts]]
+            bot.send_message(getting_user_info(update), BotMessage.start + "\n" + BotMessage.customer_menu,
+                             reply_markup=ReplyKeyboardMarkup(keyboard=reply_keyboard))
             return BotState.customer_menu
     else:
-        update.message.reply_text(general_message,
-                                  reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True))
+        reply_keyboard = [[ButtonMessage.show_stores, ButtonMessage.show_discounts]]
+        bot.send_message(getting_user_info(update), BotMessage.customer_menu,
+                         reply_markup=ReplyKeyboardMarkup(keyboard=reply_keyboard))
         return BotState.customer_menu
 
 
@@ -44,7 +48,7 @@ def customer_menu(bot, update, user_data):
     reply_keyboard = [[ButtonMessage.show_stores, ButtonMessage.show_discounts]]
     bot.send_message(getting_user_info(update), BotMessage.customer_menu,
                      reply_markup=ReplyKeyboardMarkup(keyboard=reply_keyboard))
-    return BotState.show_product
+    return BotState.customer_menu
 
 
 def send_location_for_stores(bot, update, user_data):
