@@ -1,5 +1,7 @@
 class UserData:
     stores_list = "stores_list"
+    show_stores = "show_stores"
+    show_discounts = "show_discounts"
 
 
 class UserState:
@@ -23,3 +25,36 @@ class BotState:
 
 class Pattern:
     absolute = "^{}$"
+    zero = 0
+
+
+class Mode:
+    stores_mode = 1
+    discounts_mode = 2
+
+
+class ApiData:
+    api_shops = "api/shops"
+    api_shop = "api/shop"
+    api_product = "api/product/"
+    text = "text"
+    get_shop_response = "GetShopResponse"
+    get_product_response = "GetProductResponse"
+    shop = "shop"
+    product = "product"
+
+
+class Product:
+    title = 'title'
+    text = 'text'
+    payload = ""
+    card_number = "5022291034483444"
+    start_parameter = ""
+    currency = "USD"
+    picture = 'picture'
+    price = 'price'
+    discount = 'discount'
+
+
+class LogMessage:
+    warrning = 'Update "%s" caused error "%s"'

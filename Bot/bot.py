@@ -1,10 +1,10 @@
-import requests
 from telegram import ReplyKeyboardMarkup, LabeledPrice
+import requests
 
 from Bot.bot_config import BotConfig
 from Constants.bot_messages import BotMessage
 from Constants.button_messages import ButtonMessage
-from Constants.common import BotState
+from Constants.common import BotState, UserData, Mode, ApiData, Pattern, Product, LogMessage
 from Parser.JsonToResponse import *
 from Requests.RequestModel import *
 from Utils.general_handlers import getting_user_info
@@ -33,51 +33,43 @@ def customer_menu(bot, update, user_data):
 
 
 def send_location_for_stores(bot, update, user_data):
-    user_data['mode'] = 1
-    chat_id = getting_user_info(update)
-    bot.send_message(chat_id, BotMessage.give_location)
+    user_data[UserData.show_stores] = Mode.stores_mode
+    bot.send_message(getting_user_info(update), BotMessage.give_location)
     return BotState.give_location
 
 
 def send_location_for_discount(bot, update, user_data):
-    user_data['mode'] = 2
-    chat_id = getting_user_info(update)
-    bot.send_message(chat_id, BotMessage.give_location)
+    user_data[UserData.show_discounts] = Mode.discounts_mode
+    bot.send_message(getting_user_info(update), BotMessage.give_location)
     return BotState.give_location
 
 
 def get_near_stores(bot, update, user_data):
     # TODO handle get location info
-    user_data['mode'] = 1
+    user_data[UserData.show_stores] = Mode.stores_mode
     lat = 50
     long = 50
 
-    request_model = RequestModel.get_nearest_stores(user_data['mode'], lat, long)
-
-    request = requests.post(BotConfig.server_address + 'api/shops', json=request_model)
-
+    request_model = RequestModel.get_nearest_stores(user_data[UserData.show_stores], lat, long)
+    request = requests.post(BotConfig.server_address + ApiData.api_shops, json=request_model)
     bot_response = Conversation.shop_response(request.json())
-
-    chat_id = getting_user_info(update)
-    bot.send_message(chat_id, bot_response)
+    bot.send_message(getting_user_info(update), bot_response)
     return BotState.get_nearest_stores
 
 
 def show_shop(bot, update, user_data):
     result = update.message.to_dict()
 
-    chat_id = getting_user_info(update)
-
-    request = requests.post(BotConfig.server_address + 'api/shop/' + result.get("text"))
+    request = requests.post(BotConfig.server_address + ApiData.api_shop + result.get(ApiData.text))
     json_message = request.json()
     bot_response = Conversation.show_shop_response(json_message)
-    bot.send_message(chat_id, bot_response)
+    bot.send_message(getting_user_info(update), bot_response)
 
-    bot.send_location(chat_id, json_message['GetShopResponse']['shop']['lat'],
-                      json_message['GetShopResponse']['shop']['long'])
+    bot.send_location(getting_user_info(update), json_message[ApiData.get_shop_response][ApiData.shop]['lat'],
+                      json_message[ApiData.get_shop_response][ApiData.shop]['long'])
 
     bot_response = Conversation.show_product_response(json_message)
-    bot.send_message(chat_id, bot_response)
+    bot.send_message(getting_user_info(update), bot_response)
 
     return BotState.show_shop
 
@@ -85,26 +77,21 @@ def show_shop(bot, update, user_data):
 def show_product(bot, update, user_data):
     result = update.message.to_dict()
 
-    chat_id = getting_user_info(update)
+    request = requests.post(BotConfig.server_address + ApiData.api_product + result.get(ApiData.text))
 
-    request = requests.post(BotConfig.server_address + 'api/product/' + result.get("text"))
+    product = request.json()[ApiData.get_product_response][ApiData.product][Pattern.zero]
+    # picture = product[Product.picture]
 
-    p = request.json()['GetProductResponse']['product'][0]
-
-    title = p['title']
-    text = p['text']
-    picture = p['picture']
-    price = p['price']
-    discount = p['discount']
-
-    bot.send_invoice(chat_id, title, text, "", "60606060", "", "USD",
+    bot.send_invoice(getting_user_info(update), product[Product.title], product[Product.text], Product.payload,
+                     Product.card_number, Product.start_parameter, Product.currency,
                      prices=[
-                         LabeledPrice(title, int(int(price) * 1.0 - (int(discount) / 100.0) * int(price)))
-                     ]
-                     )  # , photo_url=BotConfig.server_address + 'images/' + bot_response.picture)
+                         LabeledPrice(product[Product.title],
+                                      int(int(product[Product.price]) * 1.0 - (int(product[Product.discount]) / 100.0)
+                                          * int(product[Product.price])))
+                     ])  # , photo_url=BotConfig.server_address + 'images/' + bot_response.picture)
 
     return BotState.show_shop
 
 
 def error(bot, update):
-    iqr_bot_logger.warning('Update "%s" caused error "%s"', update, update.message)
+    iqr_bot_logger.warning(LogMessage.warrning, update, update.message)
